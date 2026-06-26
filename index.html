@@ -60,7 +60,7 @@ img{max-width:100%;display:block}
   background:var(--bg2) url("https://res.cloudinary.com/dormnrhdf/image/upload/f_auto,q_auto,w_1600/v1782466147/1782465977453_v6jsjs.png") center/cover no-repeat;
   transition:opacity .9s ease, visibility .9s;}
 #gate.hide{opacity:0;visibility:hidden}
-#gateVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+#gateVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity .45s ease}
 .gate-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(rgba(8,2,24,.16),rgba(8,2,24,.26) 55%,rgba(8,2,24,.7));transition:opacity .5s ease}
 /* transparent text overlay — the video plays through behind it */
 .gate-cta{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:36px 26px 54px;text-align:center;background:transparent;transition:opacity .5s ease}
@@ -290,7 +290,7 @@ body.pdf-capturing #petals{display:none!important}
 
 <!-- GATE (video background + transparent text) -->
 <div id="gate">
-  <video id="gateVideo" autoplay muted loop playsinline webkit-playsinline
+  <video id="gateVideo" muted playsinline webkit-playsinline preload="auto"
     poster="https://res.cloudinary.com/dormnrhdf/image/upload/f_auto,q_auto,w_1600/v1782466147/1782465977453_v6jsjs.png">
     <source id="gateVideoSrc" src="https://res.cloudinary.com/dormnrhdf/video/upload/v1782470672/Built_same_video_In_the_last_l_Seedance_20_71201_w3fzyt.mp4" type="video/mp4">
   </video>
@@ -547,8 +547,7 @@ function setGateVideo(url) {
   const v = document.getElementById("gateVideo");
   if (!v) return;
   document.getElementById("gateVideoSrc").src = url;
-  v.load();
-  v.play().catch(() => {});
+  v.load();   // preload only — do NOT play; the video starts on the Open Invitation tap
 }
 if (window.db) {
   window.db.ref(INTRO_VIDEO_PATH).on("value", snap => {
@@ -571,7 +570,8 @@ function openInvite() {
   const go = () => { if (revealed) return; revealed = true; gate.classList.add("hide"); revealInvitation(); };
   if (v) {
     try { v.loop = false; v.currentTime = 0; } catch(e){}          // loop off so 'ended' fires after one play
-    const p = v.play(); if (p && p.catch) p.catch(go);
+    v.addEventListener("playing", () => { v.style.opacity = "1"; }, { once: true });  // reveal only once frames paint — no image flash
+    const p = v.play(); if (p && p.catch) p.catch(() => { v.style.opacity = "1"; go(); });
     v.onended = go;
     setTimeout(go, 12000);                                         // safety: reveal even if 'ended' never fires
   } else { go(); }
