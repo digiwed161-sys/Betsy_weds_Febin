@@ -147,25 +147,6 @@ section{position:relative;padding:46px 26px;text-align:center}
 .act.ghost{background:#fff;color:var(--plum);border:1px solid var(--line)}
 .act svg{width:15px;height:15px}
 
-/* gallery */
-#gallery{padding:36px 0 30px}
-#gallery .eyebrow{padding:0;margin-bottom:18px}
-.gal-wrap{position:relative;height:360px;margin:0 16px;display:flex;align-items:flex-start;justify-content:center;cursor:pointer;perspective:1100px;-webkit-tap-highlight-color:transparent}
-.instax-card{position:absolute;top:8px;left:50%;width:228px;background:#fffdf8;padding:12px 12px 0;border-radius:5px;
-  box-shadow:0 16px 36px -12px rgba(58,34,112,.5),0 2px 8px rgba(0,0,0,.1);
-  transform-origin:center bottom;transition:transform .55s cubic-bezier(.22,.61,.36,1),opacity .55s;will-change:transform}
-.instax-card[data-pos="0"]{transform:translateX(-50%) translateY(0) scale(1) rotate(-1.5deg);z-index:3;opacity:1}
-.instax-card[data-pos="1"]{transform:translateX(-50%) translateY(-8px) scale(.92) rotate(4.5deg);z-index:2;opacity:.9}
-.instax-card[data-pos="2"]{transform:translateX(-50%) translateY(-15px) scale(.84) rotate(-5.5deg);z-index:1;opacity:.78}
-.instax-photo{width:100%;aspect-ratio:4/5;background:linear-gradient(135deg,var(--lav),var(--plum));overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;color:rgba(255,255,255,.45);text-transform:uppercase}
-.instax-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.instax-cap{font-family:'Great Vibes',cursive;font-size:21px;color:#7a6797;text-align:center;padding:9px 0 14px;line-height:1}
-.gal-btn{position:absolute;top:42%;transform:translateY(-50%);z-index:6;background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--plum);font-size:18px;box-shadow:0 4px 12px -4px rgba(58,34,112,.5);transition:opacity .2s}
-.gal-btn.prev{left:0}.gal-btn.next{right:0}
-.gal-dots{display:flex;justify-content:center;gap:7px;margin-top:16px}
-.gal-dot{width:6px;height:6px;border-radius:50%;background:rgba(74,45,138,.25);border:none;cursor:pointer;transition:background .2s;padding:0}
-.gal-dot.active{background:var(--plum)}
-#adminGalleryBar{text-align:center;margin-top:14px}
 
 /* wishes */
 .wfield{display:block;width:100%;font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin:10px 0;outline:none}
@@ -285,7 +266,6 @@ body.pdf-capturing #petals{display:none!important}
 <!-- ADMIN bar -->
 <div id="adminBar">
   <span>&#9998; Admin</span>
-  <button class="adm-bar-btn" onclick="adminUploadPhoto()">&#128247; Photo</button>
   <button class="adm-bar-btn" onclick="adminUploadBgm()">&#127925; BGM</button>
   <button class="adm-bar-btn" onclick="adminUploadIntroVideo()">&#127916; Intro</button>
   <button class="adm-bar-btn" id="adminExitBtn" onclick="exitAdmin()">Exit</button>
@@ -406,22 +386,6 @@ body.pdf-capturing #petals{display:none!important}
             Add to Calendar
           </a>
         </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- GALLERY -->
-  <div class="sheet">
-    <section id="gallery">
-      <div class="eyebrow">Moments</div>
-      <div class="gal-wrap">
-        <div class="instax-card" data-pos="0">
-          <div class="instax-photo" id="gPhoto1" data-slot="1">Photo Coming Soon</div>
-          <div class="instax-cap">Betsy &amp; Febin</div>
-        </div>
-      </div>
-      <div id="adminGalleryBar" style="display:none">
-        <button class="adm-bar-btn" style="background:var(--plum);color:#fff;border-color:var(--plum);margin-top:4px" onclick="adminReplacePhoto()">&#128247; Replace This Photo</button>
       </div>
     </section>
   </div>
@@ -628,43 +592,6 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-/* === GALLERY === */
-let galIdx = 0;
-const GALLERY_TOTAL = 1;
-function galRender() {
-  document.querySelectorAll(".instax-card").forEach((c, i) => {
-    c.setAttribute("data-pos", (i - galIdx + GALLERY_TOTAL) % GALLERY_TOTAL);
-  });
-  document.querySelectorAll(".gal-dot").forEach((d, i) => d.classList.toggle("active", i === galIdx));
-}
-function galGoto(idx) { galIdx = ((idx % GALLERY_TOTAL) + GALLERY_TOTAL) % GALLERY_TOTAL; galRender(); }
-function galMove(dir) { galGoto(galIdx + dir); }
-galRender();
-function renderGallery(data) {
-  data = data || {};
-  [1].forEach(slot => {
-    const entry = data["gPhoto" + slot];
-    const slide = document.getElementById("gPhoto" + slot);
-    if (!slide || !(entry && entry.url)) return;
-    if (slide.dataset.loaded === entry.url) return;   // already showing this photo
-    slide.dataset.loaded = entry.url;
-    const img = document.createElement("img");
-    // Load plainly (no crossOrigin) so the photo always renders, even on
-    // phones holding a non-CORS cached copy of the image. The PDF export
-    // uses html2canvas useCORS:true, which handles CORS on its own.
-    img.alt = "Betsy & Febin";
-    const raw = entry.url;
-    const optimized = raw.replace("/upload/", "/upload/f_auto,q_auto,w_900/");
-    // If the optimized delivery URL fails on a device, fall back to the raw
-    // uploaded URL (what the working invites serve); only then give up.
-    img.onerror = function(){ if (img.src !== raw) { img.src = raw; } else { img.onerror = null; slide.dataset.loaded = ""; } };
-    img.src = optimized;
-    slide.innerHTML = ""; slide.style.background = "";
-    slide.appendChild(img);
-  });
-}
-function loadGallery() { fbWatch(IMG_PATH, renderGallery); }
-
 /* === BGM === */
 const bgmAudio = document.getElementById("bgmAudio");
 let bgmPlaying = false;
@@ -703,7 +630,6 @@ function enterAdmin() {
   adminMode = true;
   sessionStorage.setItem("adminMode", "1");
   document.getElementById("adminBar").classList.add("open");
-  document.getElementById("adminGalleryBar").style.display = "block";
   renderAdminReplyButtons();
   toast("Admin mode active");
 }
@@ -711,7 +637,6 @@ function exitAdmin() {
   adminMode = false;
   sessionStorage.removeItem("adminMode");
   document.getElementById("adminBar").classList.remove("open");
-  document.getElementById("adminGalleryBar").style.display = "none";
   document.querySelectorAll(".wc-admin-reply").forEach(el => el.remove());
   toast("Admin mode exited");
 }
@@ -727,31 +652,6 @@ credit.addEventListener("touchend", () => clearTimeout(pressT));
 credit.addEventListener("mousedown", () => { pressT = setTimeout(openAdminModal, 900); });
 credit.addEventListener("mouseup", () => clearTimeout(pressT));
 
-function adminReplacePhoto() {
-  const slot = galIdx + 1;
-  const input = document.createElement("input");
-  input.type = "file"; input.accept = "image/*";
-  document.body.appendChild(input);
-  input.onchange = async () => {
-    if (!input.files[0]) { document.body.removeChild(input); return; }
-    const file = input.files[0];
-    document.body.removeChild(input);
-    toast("Uploading photo…");
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("upload_preset", UPLOAD_PRESET);
-    fd.append("folder", COUPLE_FOLDER);
-    try {
-      const res = await fetch("https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/auto/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!data.secure_url) throw new Error(data.error && data.error.message || "Upload failed");
-      await window.db.ref(IMG_PATH + "/gPhoto" + slot).set({ url: data.secure_url, public_id: data.public_id });
-      toast("Photo updated ✓");
-    } catch(e) { toast("Photo upload failed: " + (e.message || "try again"), true); }
-  };
-  input.click();
-}
-function adminUploadPhoto() { adminReplacePhoto(); }
 function adminUploadBgm() {
   const input = document.createElement("input");
   input.type = "file"; input.accept = "audio/*";
@@ -1050,7 +950,6 @@ async function downloadInvitePDF() {
 /* === BOOT === */
 loadInitial();
 loadWishCount();
-loadGallery();
 checkOwnWishReplies();
 </script>
 </body>
