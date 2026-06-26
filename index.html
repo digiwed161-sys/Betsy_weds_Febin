@@ -635,12 +635,11 @@ function loadGallery() {
       if (!slide) return;
       if (entry && entry.url) {
         const img = document.createElement("img");
-        const optimized = entry.url.replace("/upload/", "/upload/f_auto,q_auto,w_900/");
-        img.alt = "Betsy & Febin"; img.crossOrigin = "anonymous";
-        // If the cross-origin load fails (some phones/networks strip CORS headers),
-        // retry without crossOrigin so the photo still displays.
-        img.onerror = function(){ img.onerror = null; img.removeAttribute("crossorigin"); img.src = optimized; };
-        img.src = optimized;
+        // Load plainly (no crossOrigin) so the photo always renders, even on
+        // phones holding a non-CORS cached copy of the image. The PDF export
+        // uses html2canvas useCORS:true, which handles CORS on its own.
+        img.alt = "Betsy & Febin";
+        img.src = entry.url.replace("/upload/", "/upload/f_auto,q_auto,w_900/");
         slide.innerHTML = ""; slide.style.background = "";
         slide.appendChild(img);
       }
