@@ -13,7 +13,7 @@
 <meta property="og:url" content="https://digiwed161-sys.github.io/Betsy_weds_Febin/">
 <meta name="twitter:card" content="summary_large_image">
 
-<!-- Firebase Compat SDK â€” must load before main script -->
+<!-- Firebase Compat SDK — must load before main script -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <!-- html2canvas + jsPDF for PDF download -->
@@ -56,22 +56,21 @@ img{max-width:100%;display:block}
 @keyframes fall{0%{transform:translateY(-10vh) translateX(0) rotate(0deg);opacity:0}10%{opacity:.9}100%{transform:translateY(112vh) translateX(40px) rotate(420deg);opacity:0}}
 
 /* --- gate --- */
-#gate{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(rgba(238,233,250,.40),rgba(216,207,238,.52)),
-    var(--bg2) url("https://res.cloudinary.com/dormnrhdf/image/upload/f_auto,q_auto,w_1600/v1782466147/1782465977453_v6jsjs.png") center/cover no-repeat;
+#gate{position:fixed;inset:0;z-index:80;overflow:hidden;
+  background:var(--bg2) url("https://res.cloudinary.com/dormnrhdf/image/upload/f_auto,q_auto,w_1600/v1782466147/1782465977453_v6jsjs.png") center/cover no-repeat;
   transition:opacity .9s ease, visibility .9s;}
 #gate.hide{opacity:0;visibility:hidden}
-.gate-card{position:relative;width:min(86vw,360px);background:rgba(251,249,255,.90);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.6);border-radius:18px;padding:46px 26px 40px;text-align:center;box-shadow:0 30px 70px -30px rgba(58,34,112,.5);}
-.gate-card::before,.gate-card::after{content:"";position:absolute;width:64px;height:64px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><g fill='none' stroke='%238b6fd4' stroke-width='1.4' opacity='.7'><path d='M4 60 V20 a14 14 0 0 1 14-14 h42'/><circle cx='10' cy='54' r='3' fill='%23b89a52' stroke='none'/></g></svg>");background-size:contain;background-repeat:no-repeat;}
-.gate-card::before{top:10px;left:10px}.gate-card::after{bottom:10px;right:10px;transform:rotate(180deg)}
-.gate-eyebrow{font-family:'Cinzel',serif;letter-spacing:.42em;font-size:10px;color:var(--lav);text-transform:uppercase;margin-bottom:18px}
-.gate-names{font-family:'Great Vibes',cursive;font-size:46px;line-height:1.05;color:var(--plum);margin:6px 0 4px}
-.gate-amp{display:block;font-size:24px;color:var(--gold);margin:-2px 0}
-.gate-sub{font-style:italic;font-size:16px;color:var(--ink2);margin:14px 0 26px}
+#gateVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.gate-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(rgba(8,2,24,.16),rgba(8,2,24,.26) 55%,rgba(8,2,24,.7));transition:opacity .5s ease}
+/* transparent text overlay — the video plays through behind it */
+.gate-cta{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:36px 26px 54px;text-align:center;background:transparent;transition:opacity .5s ease}
+.gate-eyebrow{font-family:'Cinzel',serif;letter-spacing:.42em;font-size:10px;color:rgba(255,255,255,.82);text-transform:uppercase;margin-bottom:10px;text-shadow:0 1px 10px rgba(0,0,0,.6)}
+.gate-names{font-family:'Great Vibes',cursive;font-size:54px;line-height:1.05;color:#fff;margin:6px 0 4px;text-shadow:0 3px 28px rgba(0,0,0,.72),0 1px 6px rgba(0,0,0,.5)}
+.gate-amp{display:block;font-size:28px;color:var(--gold);text-shadow:0 2px 14px rgba(0,0,0,.55)}
+.gate-sub{font-style:italic;font-size:15px;color:rgba(255,255,255,.9);margin:12px 0 24px;text-shadow:0 1px 10px rgba(0,0,0,.6)}
 .open-btn{font-family:'Cinzel',serif;letter-spacing:.22em;font-size:12px;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#5a3fa0,#7b5fc8);border:none;border-radius:40px;padding:14px 30px;cursor:pointer;box-shadow:0 12px 26px -10px rgba(74,45,138,.7);transition:transform .25s ease,box-shadow .25s ease;}
 .open-btn:active{transform:scale(.96)}
-.gate-seal{width:54px;height:54px;margin:0 auto 6px;animation:beat 2.6s ease-in-out infinite}
-@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+/* (intro overlay removed — the video now plays as the gate background) */
 
 /* --- corners --- */
 .corner{position:absolute;pointer-events:none;z-index:2;opacity:.97;background-size:contain;background-repeat:no-repeat;filter:drop-shadow(0 6px 11px rgba(74,45,138,.13))}
@@ -143,13 +142,19 @@ section{position:relative;padding:46px 26px;text-align:center}
 /* gallery */
 #gallery{padding:36px 0 30px}
 #gallery .eyebrow{padding:0;margin-bottom:18px}
-.gal-wrap{position:relative;overflow:hidden;border-radius:12px;margin:0 16px}
-.gal-track{display:flex;transition:transform .4s ease}
-.gal-slide{min-width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--lav),var(--plum));display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,.35);text-transform:uppercase;border-radius:12px;overflow:hidden}
-.gal-slide img{width:100%;height:100%;object-fit:cover;display:block}
-.gal-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--plum);font-size:18px;transition:opacity .2s}
-.gal-btn.prev{left:8px}.gal-btn.next{right:8px}
-.gal-dots{display:flex;justify-content:center;gap:7px;margin-top:12px}
+.gal-wrap{position:relative;height:360px;margin:0 16px;display:flex;align-items:flex-start;justify-content:center;cursor:pointer;perspective:1100px;-webkit-tap-highlight-color:transparent}
+.instax-card{position:absolute;top:8px;left:50%;width:228px;background:#fffdf8;padding:12px 12px 0;border-radius:5px;
+  box-shadow:0 16px 36px -12px rgba(58,34,112,.5),0 2px 8px rgba(0,0,0,.1);
+  transform-origin:center bottom;transition:transform .55s cubic-bezier(.22,.61,.36,1),opacity .55s;will-change:transform}
+.instax-card[data-pos="0"]{transform:translateX(-50%) translateY(0) scale(1) rotate(-1.5deg);z-index:3;opacity:1}
+.instax-card[data-pos="1"]{transform:translateX(-50%) translateY(-8px) scale(.92) rotate(4.5deg);z-index:2;opacity:.9}
+.instax-card[data-pos="2"]{transform:translateX(-50%) translateY(-15px) scale(.84) rotate(-5.5deg);z-index:1;opacity:.78}
+.instax-photo{width:100%;aspect-ratio:4/5;background:linear-gradient(135deg,var(--lav),var(--plum));overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;color:rgba(255,255,255,.45);text-transform:uppercase}
+.instax-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.instax-cap{font-family:'Great Vibes',cursive;font-size:21px;color:#7a6797;text-align:center;padding:9px 0 14px;line-height:1}
+.gal-btn{position:absolute;top:42%;transform:translateY(-50%);z-index:6;background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--plum);font-size:18px;box-shadow:0 4px 12px -4px rgba(58,34,112,.5);transition:opacity .2s}
+.gal-btn.prev{left:0}.gal-btn.next{right:0}
+.gal-dots{display:flex;justify-content:center;gap:7px;margin-top:16px}
 .gal-dot{width:6px;height:6px;border-radius:50%;background:rgba(74,45,138,.25);border:none;cursor:pointer;transition:background .2s;padding:0}
 .gal-dot.active{background:var(--plum)}
 #adminGalleryBar{text-align:center;margin-top:14px}
@@ -172,7 +177,8 @@ textarea.wfield{resize:vertical;min-height:84px}
 .wc-time{font-size:12.5px;color:var(--ink2);opacity:.7}
 .wc-msg{font-size:17px;line-height:1.45;color:var(--ink)}
 .wc-footer{display:flex;align-items:center;margin-top:9px}
-.wc-heart{background:none;border:none;cursor:pointer;font-size:15px;color:var(--lav);display:flex;align-items:center;gap:4px;font-family:'Cormorant Garamond',serif;padding:0;transition:transform .2s;line-height:1}
+.wc-heart{background:none;border:none;cursor:pointer;font-size:15px;color:var(--lav);display:flex;align-items:center;gap:6px;font-family:'Cormorant Garamond',serif;padding:0;transition:transform .2s;line-height:1}
+.wc-heart-ico{display:flex;align-items:center}
 .wc-heart.liked{color:#e56b8c}
 .wc-heart:active{transform:scale(1.2)}
 .wc-reply-block{margin-top:10px;padding:9px 12px;border-left:3px solid var(--gold);background:rgba(184,154,82,.07);border-radius:0 8px 8px 0}
@@ -211,6 +217,8 @@ footer{text-align:center;padding:22px 24px;color:var(--ink2);background:rgba(251
 #pdfDownloadBtn{background:none;border:none;cursor:pointer;color:var(--gold);opacity:.65;padding:4px;transition:opacity .2s}
 #pdfDownloadBtn:hover{opacity:1}
 #pdfDownloadBtn svg{width:20px;height:20px;display:block}
+#adminEntryBtn{margin-top:12px;background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:rgba(74,45,138,.34);cursor:pointer;padding:5px 10px;transition:color .2s}
+#adminEntryBtn:hover,#adminEntryBtn:active{color:rgba(74,45,138,.65)}
 
 /* BGM */
 #bgmBar{position:fixed;bottom:18px;right:16px;z-index:70;display:none}
@@ -271,6 +279,7 @@ body.pdf-capturing #petals{display:none!important}
   <span>&#9998; Admin</span>
   <button class="adm-bar-btn" onclick="adminUploadPhoto()">&#128247; Photo</button>
   <button class="adm-bar-btn" onclick="adminUploadBgm()">&#127925; BGM</button>
+  <button class="adm-bar-btn" onclick="adminUploadIntroVideo()">&#127916; Intro</button>
   <button class="adm-bar-btn" id="adminExitBtn" onclick="exitAdmin()">Exit</button>
 </div>
 
@@ -279,13 +288,14 @@ body.pdf-capturing #petals{display:none!important}
   <button id="bgmBtn" onclick="toggleBgm()" aria-label="Toggle music">&#9834;</button>
 </div>
 
-<!-- GATE -->
+<!-- GATE (video background + transparent text) -->
 <div id="gate">
-  <div class="gate-card">
-    <svg class="gate-seal" viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="22" stroke="#b89a52" stroke-width="1.2"/>
-      <path d="M24 34s-9-5.4-9-12a5.4 5.4 0 0 1 9-4 5.4 5.4 0 0 1 9 4c0 6.6-9 12-9 12Z" fill="#7b5fc8"/>
-    </svg>
+  <video id="gateVideo" autoplay muted loop playsinline webkit-playsinline
+    poster="https://res.cloudinary.com/dormnrhdf/image/upload/f_auto,q_auto,w_1600/v1782466147/1782465977453_v6jsjs.png">
+    <source id="gateVideoSrc" src="https://res.cloudinary.com/dormnrhdf/video/upload/v1782470672/Built_same_video_In_the_last_l_Seedance_20_71201_w3fzyt.mp4" type="video/mp4">
+  </video>
+  <div class="gate-veil"></div>
+  <div class="gate-cta">
     <div class="gate-eyebrow">Engagement Invitation</div>
     <div class="gate-names">Betsy<span class="gate-amp">&amp;</span>Febin</div>
     <div class="gate-sub">Saturday &middot; 8 August 2026</div>
@@ -396,14 +406,21 @@ body.pdf-capturing #petals{display:none!important}
   <div class="sheet">
     <section id="gallery">
       <div class="eyebrow">Moments</div>
-      <div class="gal-wrap">
-        <div class="gal-track" id="galTrack">
-          <div class="gal-slide" id="gPhoto1" data-slot="1">Photo Coming Soon</div>
-          <div class="gal-slide" id="gPhoto2" data-slot="2">Photo Coming Soon</div>
-          <div class="gal-slide" id="gPhoto3" data-slot="3">Photo Coming Soon</div>
+      <div class="gal-wrap" onclick="galMove(1)">
+        <div class="instax-card" data-pos="0">
+          <div class="instax-photo" id="gPhoto1" data-slot="1">Photo Coming Soon</div>
+          <div class="instax-cap">Betsy &amp; Febin</div>
         </div>
-        <button class="gal-btn prev no-pdf" onclick="galMove(-1)">&#8249;</button>
-        <button class="gal-btn next no-pdf" onclick="galMove(1)">&#8250;</button>
+        <div class="instax-card" data-pos="1">
+          <div class="instax-photo" id="gPhoto2" data-slot="2">Photo Coming Soon</div>
+          <div class="instax-cap">Betsy &amp; Febin</div>
+        </div>
+        <div class="instax-card" data-pos="2">
+          <div class="instax-photo" id="gPhoto3" data-slot="3">Photo Coming Soon</div>
+          <div class="instax-cap">Betsy &amp; Febin</div>
+        </div>
+        <button class="gal-btn prev no-pdf" onclick="event.stopPropagation();galMove(-1)">&#8249;</button>
+        <button class="gal-btn next no-pdf" onclick="event.stopPropagation();galMove(1)">&#8250;</button>
       </div>
       <div class="gal-dots no-pdf" id="galDots">
         <button class="gal-dot active" onclick="galGoto(0)"></button>
@@ -461,6 +478,7 @@ body.pdf-capturing #petals{display:none!important}
       </button>
     </div>
     <div class="dw" id="dwCredit">Designed by Digi<span>Wed</span></div>
+    <button id="adminEntryBtn" class="no-pdf" onclick="openAdminModal()">Admin</button>
   </footer>
 
 </div>
@@ -522,10 +540,43 @@ function toast(msg, isErr) {
 }
 
 /* === OPEN INVITE === */
+const INTRO_VIDEO_PATH = "betsy-febin/intro-video-url";
+const DEFAULT_INTRO_VIDEO = "https://res.cloudinary.com/dormnrhdf/video/upload/v1782470672/Built_same_video_In_the_last_l_Seedance_20_71201_w3fzyt.mp4";
+let introVideoUrl = DEFAULT_INTRO_VIDEO;
+function setGateVideo(url) {
+  const v = document.getElementById("gateVideo");
+  if (!v) return;
+  document.getElementById("gateVideoSrc").src = url;
+  v.load();
+  v.play().catch(() => {});
+}
+if (window.db) {
+  window.db.ref(INTRO_VIDEO_PATH).on("value", snap => {
+    const url = snap.val();
+    if (url) { introVideoUrl = url; setGateVideo(url); }
+  });
+}
+
 let opened = false;
 function openInvite() {
   if (opened) return; opened = true;
-  document.getElementById("gate").classList.add("hide");
+  const gate = document.getElementById("gate");
+  const cta  = document.querySelector(".gate-cta");
+  const veil = document.querySelector(".gate-veil");
+  const v    = document.getElementById("gateVideo");
+  if (cta)  cta.style.opacity = "0";          // hide the writing — show the full video
+  if (veil) veil.style.opacity = "0";
+  if (window.startBGM) { try { window.startBGM(); } catch(e){} }   // music plays under the intro (user gesture)
+  let revealed = false;
+  const go = () => { if (revealed) return; revealed = true; gate.classList.add("hide"); revealInvitation(); };
+  if (v) {
+    try { v.loop = false; v.currentTime = 0; } catch(e){}          // loop off so 'ended' fires after one play
+    const p = v.play(); if (p && p.catch) p.catch(go);
+    v.onended = go;
+    setTimeout(go, 12000);                                         // safety: reveal even if 'ended' never fires
+  } else { go(); }
+}
+function revealInvitation() {
   document.getElementById("main").classList.add("show");
   document.getElementById("bgmBar").style.display = "block";
   rainPetals();
@@ -572,12 +623,15 @@ updateCountdown();
 /* === GALLERY === */
 let galIdx = 0;
 const GALLERY_TOTAL = 3;
-function galMove(dir) { galGoto((galIdx + dir + GALLERY_TOTAL) % GALLERY_TOTAL); }
-function galGoto(idx) {
-  galIdx = idx;
-  document.getElementById("galTrack").style.transform = "translateX(-" + (idx * 100) + "%)";
-  document.querySelectorAll(".gal-dot").forEach((d, i) => d.classList.toggle("active", i === idx));
+function galRender() {
+  document.querySelectorAll(".instax-card").forEach((c, i) => {
+    c.setAttribute("data-pos", (i - galIdx + GALLERY_TOTAL) % GALLERY_TOTAL);
+  });
+  document.querySelectorAll(".gal-dot").forEach((d, i) => d.classList.toggle("active", i === galIdx));
 }
+function galGoto(idx) { galIdx = ((idx % GALLERY_TOTAL) + GALLERY_TOTAL) % GALLERY_TOTAL; galRender(); }
+function galMove(dir) { galGoto(galIdx + dir); }
+galRender();
 function loadGallery() {
   if (!window.db) return;
   window.db.ref(IMG_PATH).on("value", snap => {
@@ -668,7 +722,7 @@ function adminReplacePhoto() {
     if (!input.files[0]) { document.body.removeChild(input); return; }
     const file = input.files[0];
     document.body.removeChild(input);
-    toast("Uploading photoâ€¦");
+    toast("Uploading photo…");
     const fd = new FormData();
     fd.append("file", file);
     fd.append("upload_preset", UPLOAD_PRESET);
@@ -679,8 +733,8 @@ function adminReplacePhoto() {
       const data = await res.json();
       if (!data.secure_url) throw new Error(data.error && data.error.message || "Upload failed");
       await window.db.ref(IMG_PATH + "/gPhoto" + slot).set({ url: data.secure_url, public_id: data.public_id });
-      toast("Photo updated âœ“");
-    } catch(e) { toast("Upload failed â€” try again", true); }
+      toast("Photo updated ✓");
+    } catch(e) { toast("Upload failed — try again", true); }
   };
   input.click();
 }
@@ -693,7 +747,7 @@ function adminUploadBgm() {
     if (!input.files[0]) { document.body.removeChild(input); return; }
     const file = input.files[0];
     document.body.removeChild(input);
-    toast("Uploading BGMâ€¦");
+    toast("Uploading BGM…");
     const fd = new FormData();
     fd.append("file", file);
     fd.append("upload_preset", UPLOAD_PRESET);
@@ -706,8 +760,35 @@ function adminUploadBgm() {
       await window.db.ref(BGM_PATH).set(data.secure_url);
       bgmAudio.src = data.secure_url;
       bgmAudio.play().catch(() => {}); bgmPlaying = true; updateBgmBtn();
-      toast("BGM updated âœ“");
-    } catch(e) { toast("BGM upload failed â€” try again", true); }
+      toast("BGM updated ✓");
+    } catch(e) { toast("BGM upload failed — try again", true); }
+  };
+  input.click();
+}
+
+function adminUploadIntroVideo() {
+  const input = document.createElement("input");
+  input.type = "file"; input.accept = "video/*";
+  document.body.appendChild(input);
+  input.onchange = async () => {
+    if (!input.files[0]) { document.body.removeChild(input); return; }
+    const file = input.files[0];
+    document.body.removeChild(input);
+    toast("Uploading intro video…");
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", UPLOAD_PRESET);
+    fd.append("public_id", COUPLE_FOLDER + "/intro-video");
+    fd.append("overwrite", "true");
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/video/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!data.secure_url) throw new Error(data.error && data.error.message || "Upload failed");
+      await window.db.ref(INTRO_VIDEO_PATH).set(data.secure_url);
+      introVideoUrl = data.secure_url;
+      setGateVideo(data.secure_url);
+      toast("Intro video uploaded ?");
+    } catch(e) { toast("Video upload failed — try again", true); }
   };
   input.click();
 }
@@ -733,7 +814,7 @@ function wishCard(key, w) {
   const hBtn = document.createElement("button"); hBtn.className = "wc-heart";
   const liked = !!localStorage.getItem("liked_" + key);
   if (liked) hBtn.classList.add("liked");
-  const hSpan = document.createElement("span"); hSpan.textContent = liked ? "â™¥" : "â™¡";
+  const hSpan = document.createElement("span"); hSpan.className = "wc-heart-ico"; hSpan.innerHTML = heartSVG(liked);
   const hCnt = document.createElement("span"); hCnt.textContent = w.likes ? String(w.likes) : "";
   hBtn.append(hSpan, hCnt);
   hBtn.onclick = () => likeWish(key, hBtn, hSpan, hCnt);
@@ -746,15 +827,21 @@ function wishCard(key, w) {
 
 function buildReplyBlock(reply) {
   const rb = document.createElement("div"); rb.className = "wc-reply-block";
-  const lbl = document.createElement("div"); lbl.className = "wc-reply-lbl"; lbl.textContent = "â†³ Betsy & Febin";
+  const lbl = document.createElement("div"); lbl.className = "wc-reply-lbl"; lbl.textContent = "↳ Betsy & Febin";
   const rm = document.createElement("div"); rm.className = "wc-reply-msg"; rm.textContent = String(reply.msg || "");
   rb.append(lbl, rm); return rb;
+}
+
+function heartSVG(filled) {
+  return '<svg viewBox="0 0 24 24" width="15" height="15" style="display:block" fill="' +
+    (filled ? '#e56b8c' : 'none') + '" stroke="' + (filled ? '#e56b8c' : 'currentColor') +
+    '" stroke-width="1.7"><path d="M12 20.3l-1.45-1.32C5.4 14.36 2 11.28 2 7.5 2 4.42 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 4.42 22 7.5c0 3.78-3.4 6.86-8.55 11.49L12 20.3z"/></svg>';
 }
 
 function likeWish(key, btn, hSpan, hCnt) {
   if (localStorage.getItem("liked_" + key)) return;
   localStorage.setItem("liked_" + key, "1");
-  btn.classList.add("liked"); hSpan.textContent = "â™¥";
+  btn.classList.add("liked"); hSpan.innerHTML = heartSVG(true);
   firebase.database().ref(WISH_PATH + "/" + key + "/likes").transaction(n => (n || 0) + 1);
   hCnt.textContent = String((parseInt(hCnt.textContent) || 0) + 1);
 }
@@ -771,7 +858,7 @@ function loadInitial() {
     const items = [];
     snap.forEach(ch => { items.push({ key: ch.key, val: ch.val() }); });
     if (!items.length) {
-      grid().innerHTML = '<div class="w-empty">Be the first to send a blessing </div>';
+      grid().innerHTML = '<div class="w-empty">Be the first to send a blessing 🤍</div>';
       startLive(Date.now()); return;
     }
     items.sort((a, b) => (b.val.ts || 0) - (a.val.ts || 0));
@@ -818,7 +905,7 @@ function submitWish() {
   const btn    = document.querySelector(".wfl-submit");
   const name = nameEl.value.trim(), msg = msgEl.value.trim();
   if (!name || !msg) { toast("Please add your name and a message", true); return; }
-  if (!window.db) { toast("Connection unavailable â€” try again", true); return; }
+  if (!window.db) { toast("Connection unavailable — try again", true); return; }
   btn.disabled = true; btn.style.opacity = ".5";
   const now = new Date(), ts = now.getTime(); recentlySubmittedTs = ts;
   const time = now.toLocaleDateString("en-GB", { day:"numeric", month:"short" }) + ", "
@@ -828,12 +915,12 @@ function submitWish() {
   const ownKey = ref.key;
   ref.set(wish, err => {
     btn.disabled = false; btn.style.opacity = "";
-    if (err) { toast("Could not send â€” check connection and tap SEND again", true); return; }
+    if (err) { toast("Could not send — check connection and tap SEND again", true); return; }
     const ownKeys = JSON.parse(localStorage.getItem("ownWishKeys") || "[]");
     ownKeys.unshift(ownKey); if (ownKeys.length > 20) ownKeys.length = 20;
     localStorage.setItem("ownWishKeys", JSON.stringify(ownKeys));
     nameEl.value = ""; msgEl.value = "";
-    toast("Your blessing has been sent ");
+    toast("Your blessing has been sent 🤍");
     loadWishCount();
   });
 }
@@ -859,17 +946,17 @@ function openReplyEditor(key, card, triggerBtn) {
   triggerBtn.style.display = "none";
   const wrap = card.querySelector(".wc-admin-reply");
   const ta = document.createElement("textarea"); ta.className = "wc-admin-ta";
-  ta.value = existingMsg; ta.placeholder = "Type your replyâ€¦";
+  ta.value = existingMsg; ta.placeholder = "Type your reply…";
   const btns = document.createElement("div"); btns.className = "wc-admin-btns";
   const saveBtn = document.createElement("button"); saveBtn.className = "wc-admin-save"; saveBtn.textContent = "Save";
-  const delBtn  = document.createElement("button"); delBtn.className  = "wc-admin-del";  delBtn.textContent  = existing ? "Remove" : "Cancel";
+  const delBtn  = document.createElement("button"); delBtn.className  = "wc-admin-del";  delBtn.textContent  = "Remove";
   const cancelBtn = document.createElement("button"); cancelBtn.className = "wc-admin-del"; cancelBtn.textContent = "Cancel";
   saveBtn.onclick = () => {
     const msg = ta.value.trim(); if (!msg) { toast("Reply cannot be empty", true); return; }
     saveBtn.disabled = true;
     window.db.ref(WISH_PATH + "/" + key + "/reply").set({ msg, ts: Date.now() }, err => {
       saveBtn.disabled = false;
-      if (err) { toast("Save failed â€” retry", true); return; }
+      if (err) { toast("Save failed — retry", true); return; }
       const old = card.querySelector(".wc-reply-block"); if (old) old.remove();
       const ftr = card.querySelector(".wc-footer");
       card.insertBefore(buildReplyBlock({ msg }), ftr);
@@ -882,14 +969,14 @@ function openReplyEditor(key, card, triggerBtn) {
     delBtn.disabled = true;
     window.db.ref(WISH_PATH + "/" + key + "/reply").remove(err => {
       delBtn.disabled = false;
-      if (err) { toast("Remove failed â€” retry", true); return; }
+      if (err) { toast("Remove failed — retry", true); return; }
       const old = card.querySelector(".wc-reply-block"); if (old) old.remove();
       ta.remove(); btns.remove(); triggerBtn.textContent = "Reply"; triggerBtn.style.display = "";
       toast("Reply removed");
     });
   };
   cancelBtn.onclick = () => { ta.remove(); btns.remove(); triggerBtn.style.display = ""; };
-  btns.append(saveBtn, delBtn, cancelBtn);
+  if (existing) { btns.append(saveBtn, delBtn, cancelBtn); } else { btns.append(saveBtn, cancelBtn); }
   wrap.append(ta, btns); ta.focus();
 }
 
@@ -905,7 +992,7 @@ function checkOwnWishReplies() {
       if (localStorage.getItem(seenKey)) return;
       localStorage.setItem(seenKey, "1");
       setTimeout(() => {
-        if (!document.hidden) toast("Betsy & Febin replied to your wish ");
+        if (!document.hidden) toast("Betsy & Febin replied to your wish 🤍");
         const card = document.querySelector(".wcard[data-key=\"" + key + "\"]");
         if (card) { const rb = card.querySelector(".wc-reply-block"); if (rb) rb.classList.add("wc-reply-glow"); }
       }, 500);
