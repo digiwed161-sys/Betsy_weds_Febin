@@ -638,7 +638,12 @@ function renderGallery(data) {
     // phones holding a non-CORS cached copy of the image. The PDF export
     // uses html2canvas useCORS:true, which handles CORS on its own.
     img.alt = "Betsy & Febin";
-    img.src = entry.url.replace("/upload/", "/upload/f_auto,q_auto,w_900/");
+    const raw = entry.url;
+    const optimized = raw.replace("/upload/", "/upload/f_auto,q_auto,w_900/");
+    // If the optimized delivery URL fails on a device, fall back to the raw
+    // uploaded URL (what the working invites serve); only then give up.
+    img.onerror = function(){ if (img.src !== raw) { img.src = raw; } else { img.onerror = null; slide.dataset.loaded = ""; } };
+    img.src = optimized;
     slide.innerHTML = ""; slide.style.background = "";
     slide.appendChild(img);
   });
