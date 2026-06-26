@@ -405,26 +405,11 @@ body.pdf-capturing #petals{display:none!important}
   <div class="sheet">
     <section id="gallery">
       <div class="eyebrow">Moments</div>
-      <div class="gal-wrap" onclick="galMove(1)">
+      <div class="gal-wrap">
         <div class="instax-card" data-pos="0">
           <div class="instax-photo" id="gPhoto1" data-slot="1">Photo Coming Soon</div>
           <div class="instax-cap">Betsy &amp; Febin</div>
         </div>
-        <div class="instax-card" data-pos="1">
-          <div class="instax-photo" id="gPhoto2" data-slot="2">Photo Coming Soon</div>
-          <div class="instax-cap">Betsy &amp; Febin</div>
-        </div>
-        <div class="instax-card" data-pos="2">
-          <div class="instax-photo" id="gPhoto3" data-slot="3">Photo Coming Soon</div>
-          <div class="instax-cap">Betsy &amp; Febin</div>
-        </div>
-        <button class="gal-btn prev no-pdf" onclick="event.stopPropagation();galMove(-1)">&#8249;</button>
-        <button class="gal-btn next no-pdf" onclick="event.stopPropagation();galMove(1)">&#8250;</button>
-      </div>
-      <div class="gal-dots no-pdf" id="galDots">
-        <button class="gal-dot active" onclick="galGoto(0)"></button>
-        <button class="gal-dot" onclick="galGoto(1)"></button>
-        <button class="gal-dot" onclick="galGoto(2)"></button>
       </div>
       <div id="adminGalleryBar" style="display:none">
         <button class="adm-bar-btn" style="background:var(--plum);color:#fff;border-color:var(--plum);margin-top:4px" onclick="adminReplacePhoto()">&#128247; Replace This Photo</button>
@@ -621,7 +606,7 @@ updateCountdown();
 
 /* === GALLERY === */
 let galIdx = 0;
-const GALLERY_TOTAL = 3;
+const GALLERY_TOTAL = 1;
 function galRender() {
   document.querySelectorAll(".instax-card").forEach((c, i) => {
     c.setAttribute("data-pos", (i - galIdx + GALLERY_TOTAL) % GALLERY_TOTAL);
@@ -635,7 +620,7 @@ function loadGallery() {
   if (!window.db) return;
   window.db.ref(IMG_PATH).on("value", snap => {
     const data = snap.val() || {};
-    [1, 2, 3].forEach(slot => {
+    [1].forEach(slot => {
       const entry = data["gPhoto" + slot];
       const slide = document.getElementById("gPhoto" + slot);
       if (!slide) return;
