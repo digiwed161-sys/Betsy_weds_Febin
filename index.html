@@ -625,26 +625,35 @@ function galRender() {
 function galGoto(idx) { galIdx = ((idx % GALLERY_TOTAL) + GALLERY_TOTAL) % GALLERY_TOTAL; galRender(); }
 function galMove(dir) { galGoto(galIdx + dir); }
 galRender();
-function loadGallery() {
-  if (!window.db) return;
-  window.db.ref(IMG_PATH).on("value", snap => {
-    const data = snap.val() || {};
-    [1].forEach(slot => {
-      const entry = data["gPhoto" + slot];
-      const slide = document.getElementById("gPhoto" + slot);
-      if (!slide) return;
-      if (entry && entry.url) {
-        const img = document.createElement("img");
-        // Load plainly (no crossOrigin) so the photo always renders, even on
-        // phones holding a non-CORS cached copy of the image. The PDF export
-        // uses html2canvas useCORS:true, which handles CORS on its own.
-        img.alt = "Betsy & Febin";
-        img.src = entry.url.replace("/upload/", "/upload/f_auto,q_auto,w_900/");
-        slide.innerHTML = ""; slide.style.background = "";
-        slide.appendChild(img);
-      }
-    });
+function renderGallery(data) {
+  data = data || {};
+  [1].forEach(slot => {
+    const entry = data["gPhoto" + slot];
+    const slide = document.getElementById("gPhoto" + slot);
+    if (!slide || !(entry && entry.url)) return;
+    if (slide.dataset.loaded === entry.url) return;   // already showing this photo
+    slide.dataset.loaded = entry.url;
+    const img = document.createElement("img");
+    // Load plainly (no crossOrigin) so the photo always renders, even on
+    // phones holding a non-CORS cached copy of the image. The PDF export
+    // uses html2canvas useCORS:true, which handles CORS on its own.
+    img.alt = "Betsy & Febin";
+    img.src = entry.url.replace("/upload/", "/upload/f_auto,q_auto,w_900/");
+    slide.innerHTML = ""; slide.style.background = "";
+    slide.appendChild(img);
   });
+}
+function loadGallery() {
+  // Realtime channel (instant updates when available)
+  if (window.db) window.db.ref(IMG_PATH).on("value", snap => renderGallery(snap.val()));
+  // REST fallback: works when the realtime WebSocket is blocked or the
+  // free-tier 100-connection limit is hit (common cause of a stuck
+  // "Photo Coming Soon" on some phones). Poll a few times early on.
+  const restUrl = FIREBASE_CONFIG.databaseURL + "/" + IMG_PATH + ".json";
+  const tryRest = () => fetch(restUrl, { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null).then(d => { if (d) renderGallery(d); }).catch(() => {});
+  tryRest();
+  setTimeout(tryRest, 4000);
 }
 
 /* === BGM === */
@@ -657,12 +666,19 @@ function toggleBgm() {
   updateBgmBtn();
 }
 function updateBgmBtn() { document.getElementById("bgmBtn").innerHTML = bgmPlaying ? "&#9835;" : "&#9834;"; }
-if (window.db) {
-  window.db.ref(BGM_PATH).on("value", snap => {
-    const url = snap.val();
-    if (url && bgmAudio.src !== url) { bgmAudio.src = url; bgmAudio.load(); if (bgmPlaying) bgmAudio.play().catch(() => {}); }
-  });
+function applyBgm(url) {
+  if (!url || bgmAudio.src === url) return;
+  bgmAudio.src = url; bgmAudio.load();
+  if (bgmPlaying) bgmAudio.play().catch(() => {});
 }
+if (window.db) window.db.ref(BGM_PATH).on("value", snap => applyBgm(snap.val()));
+// REST fallback when the realtime channel is unavailable (connection limit / blocked WebSocket)
+(function(){
+  const restUrl = FIREBASE_CONFIG.databaseURL + "/" + BGM_PATH + ".json";
+  const tryRest = () => fetch(restUrl, { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null).then(u => applyBgm(u)).catch(() => {});
+  tryRest(); setTimeout(tryRest, 4000);
+})();
 
 /* === ADMIN === */
 let adminMode = false;
