@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- Always fetch the latest version (avoid stale cached pages) -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+/* Force a fresh load when the browser restores this page from its
+   back/forward (bfcache) — the usual cause of a stale page on mobile. */
+window.addEventListener("pageshow", function(e){ if (e.persisted) location.reload(); });
+</script>
 <title>Betsy &amp; Febin &#8211; Engagement Invitation</title>
 
 <!-- OG / WhatsApp preview -->
