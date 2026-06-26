@@ -268,7 +268,7 @@ body.pdf-capturing #petals{display:none!important}
 <div id="bg"></div>
 <div id="petals"></div>
 <div id="toast"></div>
-<audio id="bgmAudio" preload="none" loop crossorigin="anonymous"></audio>
+<audio id="bgmAudio" preload="none" loop></audio>
 
 <!-- ADMIN modal -->
 <div id="adminModal">
@@ -636,7 +636,7 @@ function loadGallery() {
       if (entry && entry.url) {
         const img = document.createElement("img");
         const optimized = entry.url.replace("/upload/", "/upload/f_auto,q_auto,w_900/");
-        img.alt = "Betsy & Febin"; img.loading = "lazy"; img.crossOrigin = "anonymous";
+        img.alt = "Betsy & Febin"; img.crossOrigin = "anonymous";
         // If the cross-origin load fails (some phones/networks strip CORS headers),
         // retry without crossOrigin so the photo still displays.
         img.onerror = function(){ img.onerror = null; img.removeAttribute("crossorigin"); img.src = optimized; };
