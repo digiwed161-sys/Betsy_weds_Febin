@@ -268,7 +268,7 @@ body.pdf-capturing #petals{display:none!important}
 <div id="bg"></div>
 <div id="petals"></div>
 <div id="toast"></div>
-<audio id="bgmAudio" preload="none" loop></audio>
+<audio id="bgmAudio" preload="auto" loop></audio>
 
 <!-- ADMIN modal -->
 <div id="adminModal">
@@ -510,6 +510,21 @@ try {
   window._db = window.db;
 } catch(e){ console.warn("Firebase init:", e); }
 
+/* Resilient read: attach a realtime listener (retrying until the SDK handle
+   is ready) AND poll the REST .json endpoint several times. The REST polls
+   rescue phones where the realtime WebSocket is capped/blocked (the free-tier
+   100-connection limit), which otherwise leaves media stuck loading. */
+function fbWatch(path, cb) {
+  (function attach(n){
+    if (window.db) { try { window.db.ref(path).on("value", s => cb(s.val())); } catch(e){} }
+    else if (n < 20) { setTimeout(() => attach(n + 1), 500); }
+  })(0);
+  const restUrl = FIREBASE_CONFIG.databaseURL + "/" + path + ".json";
+  const poll = () => fetch(restUrl, { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null).then(v => { if (v != null) cb(v); }).catch(() => {});
+  [0, 2000, 5000, 12000, 25000].forEach(d => setTimeout(poll, d));
+}
+
 /* === LINKS === */
 document.getElementById("mapsLink").href =
   "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(VENUE_QUERY);
@@ -648,18 +663,7 @@ function renderGallery(data) {
     slide.appendChild(img);
   });
 }
-function loadGallery() {
-  // Realtime channel (instant updates when available)
-  if (window.db) window.db.ref(IMG_PATH).on("value", snap => renderGallery(snap.val()));
-  // REST fallback: works when the realtime WebSocket is blocked or the
-  // free-tier 100-connection limit is hit (common cause of a stuck
-  // "Photo Coming Soon" on some phones). Poll a few times early on.
-  const restUrl = FIREBASE_CONFIG.databaseURL + "/" + IMG_PATH + ".json";
-  const tryRest = () => fetch(restUrl, { cache: "no-store" })
-    .then(r => r.ok ? r.json() : null).then(d => { if (d) renderGallery(d); }).catch(() => {});
-  tryRest();
-  setTimeout(tryRest, 4000);
-}
+function loadGallery() { fbWatch(IMG_PATH, renderGallery); }
 
 /* === BGM === */
 const bgmAudio = document.getElementById("bgmAudio");
@@ -676,14 +680,7 @@ function applyBgm(url) {
   bgmAudio.src = url; bgmAudio.load();
   if (bgmPlaying) bgmAudio.play().catch(() => {});
 }
-if (window.db) window.db.ref(BGM_PATH).on("value", snap => applyBgm(snap.val()));
-// REST fallback when the realtime channel is unavailable (connection limit / blocked WebSocket)
-(function(){
-  const restUrl = FIREBASE_CONFIG.databaseURL + "/" + BGM_PATH + ".json";
-  const tryRest = () => fetch(restUrl, { cache: "no-store" })
-    .then(r => r.ok ? r.json() : null).then(u => applyBgm(u)).catch(() => {});
-  tryRest(); setTimeout(tryRest, 4000);
-})();
+fbWatch(BGM_PATH, applyBgm);
 
 /* === ADMIN === */
 let adminMode = false;
