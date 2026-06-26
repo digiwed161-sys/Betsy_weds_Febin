@@ -726,14 +726,13 @@ function adminReplacePhoto() {
     fd.append("file", file);
     fd.append("upload_preset", UPLOAD_PRESET);
     fd.append("public_id", COUPLE_FOLDER + "/gPhoto" + slot);
-    fd.append("overwrite", "true");
     try {
-      const res = await fetch("https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/image/upload", { method: "POST", body: fd });
+      const res = await fetch("https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/auto/upload", { method: "POST", body: fd });
       const data = await res.json();
       if (!data.secure_url) throw new Error(data.error && data.error.message || "Upload failed");
       await window.db.ref(IMG_PATH + "/gPhoto" + slot).set({ url: data.secure_url, public_id: data.public_id });
       toast("Photo updated ✓");
-    } catch(e) { toast("Upload failed — try again", true); }
+    } catch(e) { toast("Photo upload failed: " + (e.message || "try again"), true); }
   };
   input.click();
 }
@@ -777,16 +776,15 @@ function adminUploadIntroVideo() {
     fd.append("file", file);
     fd.append("upload_preset", UPLOAD_PRESET);
     fd.append("public_id", COUPLE_FOLDER + "/intro-video");
-    fd.append("overwrite", "true");
     try {
-      const res = await fetch("https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/video/upload", { method: "POST", body: fd });
+      const res = await fetch("https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/auto/upload", { method: "POST", body: fd });
       const data = await res.json();
       if (!data.secure_url) throw new Error(data.error && data.error.message || "Upload failed");
       await window.db.ref(INTRO_VIDEO_PATH).set(data.secure_url);
       introVideoUrl = data.secure_url;
       setGateVideo(data.secure_url);
-      toast("Intro video uploaded ?");
-    } catch(e) { toast("Video upload failed — try again", true); }
+      toast("Intro video uploaded ✓");
+    } catch(e) { toast("Video upload failed: " + (e.message || "try again"), true); }
   };
   input.click();
 }
