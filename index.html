@@ -179,7 +179,7 @@ textarea.wfield{resize:vertical;min-height:84px}
 .wish-skel{height:80px;border-radius:14px;margin-bottom:0;background:linear-gradient(90deg,rgba(74,45,138,.04) 25%,rgba(74,45,138,.09) 50%,rgba(74,45,138,.04) 75%);background-size:200% 100%;animation:skel 1.4s ease infinite}
 @keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
 #loadmore-wrap{margin-top:20px}
-#loadMoreBtn,#seeWishesBtn{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:var(--plum);background:#fff;border:1px solid var(--line);border-radius:30px;padding:11px 24px;cursor:pointer}
+#loadMoreBtn{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:var(--plum);background:#fff;border:1px solid var(--line);border-radius:30px;padding:11px 24px;cursor:pointer}
 .w-empty{font-style:italic;color:var(--ink2);opacity:.75;margin-top:20px}
 /* admin reply editor */
 .wc-admin-reply{margin-top:8px}
@@ -400,9 +400,6 @@ body.pdf-capturing #petals{display:none!important}
       <textarea id="wisherMsg" class="wfield" maxlength="280" placeholder="Your message of love &amp; blessing&#8230;"></textarea>
       <button class="wfl-submit" onclick="submitWish()">Send Wish</button>
       <div id="wgrid"></div>
-      <div id="seewishes-wrap" style="margin-top:20px">
-        <button id="seeWishesBtn" onclick="revealAllWishes()">See all wishes</button>
-      </div>
       <div id="loadmore-wrap" style="display:none">
         <button id="loadMoreBtn" onclick="loadMore()">Load older wishes</button>
       </div>
@@ -716,7 +713,7 @@ function loadOwnWishes() {
   grid().innerHTML = "";
   const keys = ownWishKeyList();
   if (!keys.length) {
-    grid().innerHTML = '<div class="w-empty">Your blessing will appear here once you send it. Tap “See all wishes” to read everyone’s.</div>';
+    grid().innerHTML = '<div class="w-empty">Your blessing will appear here once you send it 🤍</div>';
     return;
   }
   const place = (key, w) => {
