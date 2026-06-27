@@ -179,7 +179,7 @@ textarea.wfield{resize:vertical;min-height:84px}
 .wish-skel{height:80px;border-radius:14px;margin-bottom:0;background:linear-gradient(90deg,rgba(74,45,138,.04) 25%,rgba(74,45,138,.09) 50%,rgba(74,45,138,.04) 75%);background-size:200% 100%;animation:skel 1.4s ease infinite}
 @keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
 #loadmore-wrap{margin-top:20px}
-#loadMoreBtn{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:var(--plum);background:#fff;border:1px solid var(--line);border-radius:30px;padding:11px 24px;cursor:pointer}
+#loadMoreBtn,#seeWishesBtn{font-family:'Cinzel',serif;letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:var(--plum);background:#fff;border:1px solid var(--line);border-radius:30px;padding:11px 24px;cursor:pointer}
 .w-empty{font-style:italic;color:var(--ink2);opacity:.75;margin-top:20px}
 /* admin reply editor */
 .wc-admin-reply{margin-top:8px}
@@ -399,10 +399,9 @@ body.pdf-capturing #petals{display:none!important}
       <input id="wisherName" class="wfield" type="text" maxlength="40" placeholder="Your name">
       <textarea id="wisherMsg" class="wfield" maxlength="280" placeholder="Your message of love &amp; blessing&#8230;"></textarea>
       <button class="wfl-submit" onclick="submitWish()">Send Wish</button>
-      <div id="wgrid">
-        <div class="wish-skel"></div>
-        <div class="wish-skel"></div>
-        <div class="wish-skel"></div>
+      <div id="wgrid"></div>
+      <div id="seewishes-wrap" style="margin-top:20px">
+        <button id="seeWishesBtn" onclick="revealAllWishes()">See all wishes</button>
       </div>
       <div id="loadmore-wrap" style="display:none">
         <button id="loadMoreBtn" onclick="loadMore()">Load older wishes</button>
@@ -630,6 +629,7 @@ function enterAdmin() {
   adminMode = true;
   sessionStorage.setItem("adminMode", "1");
   document.getElementById("adminBar").classList.add("open");
+  revealAllWishes();   // admin sees every wish to moderate/reply
   renderAdminReplyButtons();
   toast("Admin mode active");
 }
@@ -706,8 +706,40 @@ function adminUploadIntroVideo() {
 
 /* === WISHES === */
 const PAGE_SIZE = 6;
-let oldestKey = null, reachedEnd = false, recentlySubmittedTs = 0, liveStarted = false;
+let oldestKey = null, reachedEnd = false, recentlySubmittedTs = 0, liveStarted = false, allRevealed = false;
 const grid = () => document.getElementById("wgrid");
+
+function ownWishKeyList() { try { return JSON.parse(localStorage.getItem("ownWishKeys") || "[]"); } catch(e){ return []; } }
+
+// Default view: a guest sees ONLY the wishes they posted themselves.
+function loadOwnWishes() {
+  grid().innerHTML = "";
+  const keys = ownWishKeyList();
+  if (!keys.length) {
+    grid().innerHTML = '<div class="w-empty">Your blessing will appear here once you send it. Tap “See all wishes” to read everyone’s.</div>';
+    return;
+  }
+  const place = (key, w) => {
+    if (!w || grid().querySelector('[data-key="' + key + '"]')) return;
+    const empty = grid().querySelector(".w-empty"); if (empty) empty.remove();
+    grid().appendChild(wishCard(key, w));
+    if (adminMode) renderAdminReplyButtons();
+  };
+  keys.forEach(key => {
+    if (window.db) window.db.ref(WISH_PATH + "/" + key).once("value", s => place(key, s.val()), () => {});
+    fetch(FIREBASE_CONFIG.databaseURL + "/" + WISH_PATH + "/" + key + ".json", { cache: "no-store" })
+      .then(r => r.ok ? r.json() : null).then(w => place(key, w)).catch(() => {});
+  });
+}
+
+// Guest opts in to see everyone's wishes.
+function revealAllWishes() {
+  if (allRevealed) return; allRevealed = true;
+  const w = document.getElementById("seewishes-wrap"); if (w) w.style.display = "none";
+  grid().innerHTML = "";          // clear the own-only view
+  oldestKey = null; reachedEnd = false;
+  loadInitial();                  // load all wishes + start live updates
+}
 
 function initials(n) { return (n||"?").trim().split(/\s+/).map(w => w[0]).slice(0,2).join("").toUpperCase(); }
 
@@ -830,6 +862,9 @@ function submitWish() {
     const ownKeys = JSON.parse(localStorage.getItem("ownWishKeys") || "[]");
     ownKeys.unshift(ownKey); if (ownKeys.length > 20) ownKeys.length = 20;
     localStorage.setItem("ownWishKeys", JSON.stringify(ownKeys));
+    // Show the guest their own wish right away (works in own-only or all view)
+    const emptyMsg = grid().querySelector(".w-empty"); if (emptyMsg) emptyMsg.remove();
+    if (!grid().querySelector('[data-key="' + ownKey + '"]')) grid().insertBefore(wishCard(ownKey, wish), grid().firstChild);
     nameEl.value = ""; msgEl.value = "";
     toast("Your blessing has been sent 🤍");
     loadWishCount();
@@ -948,7 +983,7 @@ async function downloadInvitePDF() {
 }
 
 /* === BOOT === */
-loadInitial();
+loadOwnWishes();
 loadWishCount();
 checkOwnWishReplies();
 </script>
